@@ -350,6 +350,33 @@ class MatrixTest {
     }
 
     @Test
+    fun testReplace() {
+        matrix.set(3, 3, "a")
+        matrix.set(3, 4, "a")
+        matrix.set(3, 5, "a")
+        matrix.set(4, 6, "b")
+        matrix.set(4, 7, "b")
+
+        assertEquals(3, matrix.count("a"))
+        assertEquals(2, matrix.count("b"))
+        assertEquals(195, matrix.count("."))
+        assertEquals(0, matrix.count("z"))
+        assertEquals(0, matrix.count("#"))
+
+        val map = mapOf(
+            "a" to "z",
+            "." to "#"
+        )
+        matrix.replace(map)
+
+        assertEquals(0, matrix.count("a"))
+        assertEquals(2, matrix.count("b"))
+        assertEquals(0, matrix.count("."))
+        assertEquals(3, matrix.count("z"))
+        assertEquals(195, matrix.count("#"))
+    }
+
+    @Test
     fun testRotate() {
         matrix.cutOut(Point(0, 0), Point(9, 9))
         matrix.set(matrix.topLeft(), "A")
@@ -363,5 +390,15 @@ class MatrixTest {
         assertEquals("A", matrix.get(matrix.topRight()))
         assertEquals("D", matrix.get(matrix.bottomLeft()))
         assertEquals("B", matrix.get(matrix.bottomRight()))
+    }
+
+    @Test
+    fun testCopy() {
+        val a = MatrixInt.buildDefault(4, 4, 0)
+        a.set(3, 3, 3)
+        val b = a.copy()
+        a.set(1, 1, 1)
+        assertEquals(3, b.get(3, 3))
+        assertEquals(0, b.get(1, 1))
     }
 }

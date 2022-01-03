@@ -218,6 +218,32 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
         input.addAll(newMatrix.input)
     }
 
+    fun replace(map: Map<T, T>) {
+        for (point in allPoints()) {
+            val value = get(point)
+            if (map.containsKey(value)) {
+                set(point, map[value]!!)
+            }
+        }
+    }
+
+    fun rotateRight() {
+        if (width() != height()) throw Exception("Cannot rotate when dimensions are unequal!")
+
+        val rows = mutableListOf<MutableList<T>>()
+        for (x in 0 until width()) {
+            rows.add(getColumn(x).reversed().toMutableList())
+        }
+
+        input.clear()
+        input.addAll(rows)
+    }
+
+    fun copy(): Matrix<T> {
+        val inputCopy = input.map { it -> it.map { it }.toMutableList() }.toMutableList()
+        return Matrix(inputCopy)
+    }
+
     fun toString(separatorElement: String, separatorLine: String): String {
         val builder = StringBuilder()
         for (y in 0 until height()) {
@@ -234,18 +260,6 @@ open class Matrix<T>(internal val input: MutableList<MutableList<T>>) {
 
     override fun toString(): String {
         return toString("", "\n")
-    }
-
-    fun rotateRight() {
-        if (width() != height()) throw Exception("Cannot rotate when dimensions are unequal!")
-
-        val rows = mutableListOf<MutableList<T>>()
-        for (x in 0 until width()) {
-            rows.add(getColumn(x).reversed().toMutableList())
-        }
-
-        input.clear()
-        input.addAll(rows)
     }
 
     companion object {
