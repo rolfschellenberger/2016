@@ -1,35 +1,56 @@
-\-\-\- Day 7: Internet Protocol Version 7 ---
----------------------------------------------
+\-\-\- Day 8: Two-Factor Authentication ---
+-------------------------------------------
 
-While snooping around the local network of EBHQ, you compile a list of [IP addresses](https://en.wikipedia.org/wiki/IP_address) (they're IPv7, of course; [IPv6](https://en.wikipedia.org/wiki/IPv6) is much too limited). You'd like to figure out which IPs support _TLS_ (transport-layer snooping).
+You come across a door implementing what you can only assume is an implementation of [two-factor authentication](https://en.wikipedia.org/wiki/Multi-factor_authentication) after a long game of [requirements](https://en.wikipedia.org/wiki/Requirement) [telephone](https://en.wikipedia.org/wiki/Chinese_whispers).
 
-An IP supports TLS if it has an Autonomous Bridge Bypass Annotation, or _ABBA_. An ABBA is any four-character sequence which consists of a pair of two different characters followed by the reverse of that pair, such as `xyyx` or `abba`. However, the IP also must not have an ABBA within any hypernet sequences, which are contained by _square brackets_.
+To get past the door, you first swipe a keycard (no problem; there was one on a nearby desk). Then, it displays a code on a [little screen](https://www.google.com/search?q=tiny+lcd&tbm=isch), and you type that code on a keypad. Then, presumably, the door unlocks.
 
-For example:
+Unfortunately, the screen has been smashed. After a few minutes, you've taken everything apart and figured out how it works. Now you just have to work out what the screen _would_ have displayed.
 
-* `abba[mnop]qrst` supports TLS (`abba` outside square brackets).
-* `abcd[bddb]xyyx` does _not_ support TLS (`bddb` is within square brackets, even though `xyyx` is outside square brackets).
-* `aaaa[qwer]tyui` does _not_ support TLS (`aaaa` is invalid; the interior characters must be different).
-* `ioxxoj[asdfgh]zxcvbn` supports TLS (`oxxo` is outside square brackets, even though it's within a larger string).
+The magnetic strip on the card you swiped encodes a series of instructions for the screen; these instructions are your puzzle input. The screen is _`50` pixels wide and `6` pixels tall_, all of which start _off_, and is capable of three somewhat peculiar operations:
 
-_How many IPs_ in your puzzle input support TLS?
+* `rect AxB` turns _on_ all of the pixels in a rectangle at the top-left of the screen which is `A` wide and `B` tall.
+* `rotate row y=A by B` shifts all of the pixels in row `A` (0 is the top row) _right_ by `B` pixels. Pixels that would fall off the right end appear at the left end of the row.
+* `rotate column x=A by B` shifts all of the pixels in column `A` (0 is the left column) _down_ by `B` pixels. Pixels that would fall off the bottom appear at the top of the column.
+
+For example, here is a simple sequence on a smaller screen:
+
+* `rect 3x2` creates a small rectangle in the top-left corner:
+    
+        ###....
+        ###....
+        .......
+    
+* `rotate column x=1 by 1` rotates the second column down by one pixel:
+    
+        #.#....
+        ###....
+        .#.....
+    
+* `rotate row y=0 by 4` rotates the top row right by four pixels:
+    
+        ....#.#
+        ###....
+        .#.....
+    
+* `rotate column x=1 by 1` again rotates the second column down by one pixel, causing the bottom pixel to wrap back to the top:
+    
+        .#..#.#
+        #.#....
+        .#.....
+    
+
+As you can see, this display technology is extremely powerful, and will soon dominate the tiny-code-displaying-screen market. That's what the advertisement on the back of the display tries to convince you, anyway.
+
+There seems to be an intermediate check of the voltage used by the display: after you swipe your card, if the screen did work, _how many pixels should be lit?_
 
 Your puzzle answer was `115`.
 
 \-\-\- Part Two ---
 -------------------
 
-You would also like to know which IPs support _SSL_ (super-secret listening).
+You notice that the screen is only capable of displaying capital letters; in the font it uses, each letter is `5` pixels wide and `6` tall.
 
-An IP supports SSL if it has an Area-Broadcast Accessor, or _ABA_, anywhere in the supernet sequences (outside any square bracketed sections), and a corresponding Byte Allocation Block, or _BAB_, anywhere in the hypernet sequences. An ABA is any three-character sequence which consists of the same character twice with a different character between them, such as `xyx` or `aba`. A corresponding BAB is the same characters but in reversed positions: `yxy` and `bab`, respectively.
+After you swipe your card, _what code is the screen trying to display?_
 
-For example:
-
-* `aba[bab]xyz` supports SSL (`aba` outside square brackets with corresponding `bab` within square brackets).
-* `xyx[xyx]xyx` does _not_ support SSL (`xyx`, but no corresponding `yxy`).
-* `aaa[kek]eke` supports SSL (`eke` in supernet with corresponding `kek` in hypernet; the `aaa` sequence is not related, because the interior character must be different).
-* `zazbz[bzb]cdb` supports SSL (`zaz` has no corresponding `aza`, but `zbz` has a corresponding `bzb`, even though `zaz` and `zbz` overlap).
-
-_How many IPs_ in your puzzle input support SSL?
-
-Your puzzle answer was `231`.
+Your puzzle answer was `EFEYKFRFIJ`.
