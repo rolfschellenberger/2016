@@ -4,7 +4,9 @@ import com.rolf.util.readLines
 
 abstract class Day {
 
-    abstract fun getDay(): Int
+    open fun getDay(): Int {
+        return javaClass.simpleName.replace("Day", "").toInt()
+    }
 
     fun run() {
         val day = getDay().toString().padStart(2, '0')
