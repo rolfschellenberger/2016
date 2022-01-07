@@ -9,6 +9,22 @@ fun main() {
 
 class Day24 : Day() {
     override fun solve1(lines: List<String>) {
+        val triple = calculateDistances(lines)
+        val start = triple.first
+        val locations = triple.second
+        val distances: MutableMap<Pair<Point, Point>, Int> = triple.third
+        println(shortestDistance(locations, start, distances, endAtStart = false))
+    }
+
+    override fun solve2(lines: List<String>) {
+        val triple = calculateDistances(lines)
+        val start = triple.first
+        val locations = triple.second
+        val distances: MutableMap<Pair<Point, Point>, Int> = triple.third
+        println(shortestDistance(locations, start, distances, endAtStart = true))
+    }
+
+    private fun calculateDistances(lines: List<String>): Triple<Point, MutableMap<Int, Point>, MutableMap<Pair<Point, Point>, Int>> {
         val grid = MatrixString.build(splitLines(lines))
 
         var start = Point(0, 0)
@@ -49,8 +65,15 @@ class Day24 : Day() {
                 }
             }
         }
+        return Triple(start, locations, distances)
+    }
 
-        // Sum the shortest distance to visit all
+    private fun shortestDistance(
+        locations: MutableMap<Int, Point>,
+        start: Point,
+        distances: MutableMap<Pair<Point, Point>, Int>,
+        endAtStart: Boolean
+    ): Int {
         val permutations = getPermutations(locations.keys.toList())
         var minDistance = Int.MAX_VALUE
         for (permutation in permutations) {
@@ -61,9 +84,12 @@ class Day24 : Day() {
                 distance += distances[from to to]!!
                 from = to
             }
+            if (endAtStart) {
+                distance += distances[from to start]!!
+            }
             minDistance = minOf(minDistance, distance)
         }
-        println(minDistance)
+        return minDistance
     }
 
     private fun prefill(distances: MutableMap<Pair<Point, Point>, Int>) {
@@ -103,65 +129,5 @@ class Day24 : Day() {
         distances[Point(x = 43, y = 33) to Point(x = 43, y = 33)] = 0
         distances[Point(x = 43, y = 33) to Point(x = 175, y = 1)] = 196
         distances[Point(x = 175, y = 1) to Point(x = 175, y = 1)] = 0
-    }
-
-    override fun solve2(lines: List<String>) {
-        val grid = MatrixString.build(splitLines(lines))
-
-        var start = Point(0, 0)
-        val locations = mutableMapOf<Int, Point>()
-        for (point in grid.allPoints()) {
-            val value = grid.get(point)
-            if (value.isNumeric()) {
-                val number = value.toInt()
-                if (number == 0) {
-                    start = point
-                } else {
-                    locations[number] = point
-                }
-            }
-        }
-        val allLocations = locations.values + start
-
-        // Calculate the shortest distances between all locations
-        val distances: MutableMap<Pair<Point, Point>, Int> = mutableMapOf()
-        prefill(distances)
-        for ((index, location) in allLocations.withIndex()) {
-            println("Calculating distance ${index + 1} / ${allLocations.size}")
-            for (otherLocation in allLocations) {
-                if (location != otherLocation) {
-                    val cache = distances[location to otherLocation]
-                    if (cache == null) {
-                        val previouslyCalculated = distances[otherLocation to location]
-                        if (previouslyCalculated != null) {
-                            distances[location to otherLocation] = previouslyCalculated
-                        } else {
-                            val matrix = MatrixInt.buildForShortestPath(grid, "#")
-                            val dist = matrix.shortestPath(location, otherLocation)
-                            distances[location to otherLocation] = dist
-                        }
-                    } else {
-                        distances[otherLocation to location] = cache
-                    }
-                }
-            }
-        }
-
-        // Sum the shortest distance to visit all
-        val permutations = getPermutations(locations.keys.toList())
-        var minDistance = Int.MAX_VALUE
-        for (permutation in permutations) {
-            var distance = 0
-            var from = start
-            for (pos in permutation) {
-                val to = locations[pos]!!
-                distance += distances[from to to]!!
-                from = to
-            }
-            // End back at start
-            distance += distances[from to start]!!
-            minDistance = minOf(minDistance, distance)
-        }
-        println(minDistance)
     }
 }
