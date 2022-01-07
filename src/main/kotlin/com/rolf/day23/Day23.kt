@@ -56,8 +56,6 @@ class Computer(val instructions: List<Instruction>) {
     }
 
     fun execute(instruction: Instruction): Int {
-        println(instruction)
-        println(registers)
         when (instruction.operator) {
             "cpy" -> {
                 val x = getValue(instruction[1])
